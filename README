@@ -1,4 +1,10 @@
-picoc
+my work
+    I use interactive mode mainly for stuff like bit hacking.
+    Therefore it would be convenient 
+        1. `picoc` directly starts in interactive mode
+        2. typing in an expression would have picoc evaluate it
+    This fork add the above features and is tested under Windows.
+
 -----
 
 PicoC is a very small C interpreter for scripting. It was originally written 
