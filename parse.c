@@ -588,12 +588,12 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
             return ParseResultEOF;
             
         case TokenIdentifier:
-            /* might be a typedef-typed variable declaration or it might be an expression */
             if (VariableDefined(Parser->pc, LexerValue->Val->Identifier))
             {
                 VariableGet(Parser->pc, Parser, LexerValue->Val->Identifier, &VarValue);
                 if (VarValue->Typ->Base == Type_Type)
                 {
+                    /* might be a typedef-typed variable declaration or it might be an expression */
                     *Parser = PreState;
                     ParseDeclaration(Parser, Token);
                     break;
@@ -651,8 +651,19 @@ enum ParseResult ParseStatement(struct ParseState *Parser, int CheckTrailingSemi
         case TokenOpenBracket: 
             *Parser = PreState;
             ExpressionParse(Parser, &CValue);
+            PrintValue(Parser->pc, CValue);
             if (Parser->Mode == RunModeRun) 
                 VariableStackPop(Parser, CValue);
+            break;
+        
+        case TokenIntegerConstant:
+        case TokenFPConstant:
+        case TokenStringConstant:
+        case TokenCharacterConstant:
+            /* deal with using picoc as a C calc. */
+            *Parser = PreState;
+            ExpressionParse(Parser, &CValue);
+            PrintValue(Parser->pc, CValue);
             break;
             
         case TokenLeftBrace:

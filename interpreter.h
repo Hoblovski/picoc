@@ -7,7 +7,6 @@
 
 #include "platform.h"
 
-
 /* handy definitions */
 #ifndef TRUE
 #define TRUE 1
@@ -54,6 +53,7 @@ typedef FILE IOFILE;
 #define IS_NUMERIC_COERCIBLE(v) (IS_INTEGER_NUMERIC(v) || IS_FP(v))
 #define IS_NUMERIC_COERCIBLE_PLUS_POINTERS(v,ap) (IS_NUMERIC_COERCIBLE(v) || IS_POINTER_COERCIBLE(v,ap))
 
+#define FEATURE_AUTO_DECLARE_VARIABLES
 
 struct Table;
 struct Picoc_Struct;
@@ -509,6 +509,7 @@ long ExpressionParseInt(struct ParseState *Parser);
 void ExpressionAssign(struct ParseState *Parser, struct Value *DestValue, struct Value *SourceValue, int Force, const char *FuncName, int ParamNo, int AllowPointerCoercion);
 long ExpressionCoerceInteger(struct Value *Val);
 unsigned long ExpressionCoerceUnsignedInteger(struct Value *Val);
+void PrintValue(Picoc *pc, struct Value *val);
 #ifndef NO_FP
 double ExpressionCoerceFP(struct Value *Val);
 #endif

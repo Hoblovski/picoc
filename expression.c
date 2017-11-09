@@ -77,6 +77,39 @@ static struct OpPrecedence OperatorPrecedence[] =
 
 void ExpressionParseFunctionCall(struct ParseState *Parser, struct ExpressionStack **StackTop, const char *FuncName, int RunIt);
 
+void PrintValue(Picoc *pc, struct Value *val) {
+    if (!val) return;
+    switch (val->Typ->Base)
+    {
+        case TypeVoid:      printf("void"); break;
+        case TypeInt:       printf("%d (0x%08X):int", val->Val->Integer, val->Val->Integer); break;
+        case TypeShort:     printf("%d (0x%08X):short", val->Val->ShortInteger, val->Val->ShortInteger); break;
+        case TypeChar:      printf("%d (0x%08X):char", val->Val->Character, val->Val->ShortInteger); break;
+        case TypeLong:      printf("%ld (0x%08X):long", val->Val->LongInteger, val->Val->LongInteger); break;
+        case TypeUnsignedShort: printf("%d (0x%08X):unsigned short", val->Val->UnsignedShortInteger, val->Val->UnsignedShortInteger); break;
+        case TypeUnsignedInt: printf("%d (0x%08X):unsigned int", val->Val->UnsignedInteger, val->Val->UnsignedInteger); break;
+        case TypeUnsignedLong: printf("%ld (0x%08X):unsigned long", val->Val->UnsignedLongInteger, val->Val->UnsignedLongInteger); break;
+        case TypeFP:        printf("%f:fp", val->Val->FP); break;
+        case TypeFunction:  printf("%s:function", val->Val->Identifier); break;
+        case TypeMacro:     printf("%s:macro", val->Val->Identifier); break;
+        case TypePointer:
+            if (val->Val->Pointer == NULL)
+                printf("ptr(NULL)");
+            else if (val->Typ->FromType->Base == TypeChar)
+                printf("0x%08X (\"%s\"): char*", val->Val->Pointer, (char *)val->Val->Pointer);
+            else
+                printf("ptr(0x%lx)", (long)val->Val->Pointer); 
+            break;
+        case TypeArray:     printf("array"); break;
+        case TypeStruct:    printf("%s:struct", val->Val->Identifier); break;
+        case TypeUnion:     printf("%s:union", val->Val->Identifier); break;
+        case TypeEnum:      printf("%s:enum", val->Val->Identifier); break;
+        case Type_Type:     PrintType(val->Val->Typ, pc->CStdOut); printf(":type"); break;
+        default:            printf("unknown"); break;
+    }
+    printf("\n");
+}
+
 #ifdef DEBUG_EXPRESSIONS
 /* show the contents of the expression stack */
 void ExpressionStackShow(Picoc *pc, struct ExpressionStack *StackTop)

@@ -15,48 +15,28 @@
 
 int main(int argc, char **argv)
 {
-    int ParamCount = 1;
     int DontRunMain = FALSE;
     int StackSize = getenv("STACKSIZE") ? atoi(getenv("STACKSIZE")) : PICOC_STACK_SIZE;
     Picoc pc;
     
-    if (argc < 2)
-    {
-        printf("Format: picoc <csource1.c>... [- <arg1>...]    : run a program (calls main() to start it)\n"
-               "        picoc -s <csource1.c>... [- <arg1>...] : script mode - runs the program without calling main()\n"
-               "        picoc -i                               : interactive mode\n");
-        exit(1);
-    }
-    
     PicocInitialise(&pc, StackSize);
-    
-    if (strcmp(argv[ParamCount], "-s") == 0 || strcmp(argv[ParamCount], "-m") == 0)
-    {
-        DontRunMain = TRUE;
-        PicocIncludeAllSystemHeaders(&pc);
-        ParamCount++;
-    }
-        
-    if (argc > ParamCount && strcmp(argv[ParamCount], "-i") == 0)
+    if (argc < 2)
     {
         PicocIncludeAllSystemHeaders(&pc);
         PicocParseInteractive(&pc);
     }
-    else
+    else if (strcmp(argv[1], "-s") == 0 || strcmp(argv[1], "-m") == 0) 
     {
-        if (PicocPlatformSetExitPoint(&pc))
-        {
-            PicocCleanup(&pc);
-            return pc.PicocExitValue;
-        }
-        
-        for (; ParamCount < argc && strcmp(argv[ParamCount], "-") != 0; ParamCount++)
-            PicocPlatformScanFile(&pc, argv[ParamCount]);
-        
-        if (!DontRunMain)
-            PicocCallMain(&pc, argc - ParamCount, &argv[ParamCount]);
+        DontRunMain = TRUE;
+        PicocIncludeAllSystemHeaders(&pc);
+    } 
+    else 
+    {
+        printf("Format: picoc : default interactive mode (including all sys headers)\n"
+               "        picoc -s <csource1.c>... [- <arg1>...] : script mode - runs the program without calling main()\n");
+        exit(1);
     }
-    
+
     PicocCleanup(&pc);
     return pc.PicocExitValue;
 }
